@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @font-face {
+            font-family: 'SA Font';
+            src: url('https://your-server.com/fonts/sa-gta.ttf') format('truetype');
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'SA Font', 'Arial', sans-serif;
+            background: transparent;
+        }
+        
+        #hud-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        /* Анимированный градиентный фон для всего HUD */
+        #hud-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(11,22,35,0.95) 0%, rgba(23,42,58,0.9) 70%);
+            opacity: 0.8;
+            z-index: -1;
+        }
+        
+        /* Панель информации (правая сторона) */
+        #info-panel {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(10, 25, 40, 0.85);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.4);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            min-width: 200px;
+        }
+        
+        /* Время и дата */
+        #datetime {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(52, 152, 219, 0.2);
+        }
+        
+        #time {
+            font-size: 24px;
+            color: #f1c40f;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(241, 196, 15, 0.3);
+        }
+        
+        #date {
+            font-size: 16px;
+            color: #ecf0f1;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        /* Деньги */
+        #money {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 12px 0;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border-left: 3px solid #2ecc71;
+        }
+        
+        .money-label {
+            color: #bdc3c7;
+            font-size: 14px;
+        }
+        
+        .money-value {
+            color: #2ecc71;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        /* Здоровье */
+        #health {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 12px 0 5px 0;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .health-label {
+            color: #bdc3c7;
+            font-size: 14px;
+        }
+        
+        .health-value {
+            color: #e74c3c;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        /* Название сервера */
+        #server-name {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 24px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
+            background: linear-gradient(90deg, rgba(41,128,185,0.4) 0%, transparent 100%);
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        
+        /* Подсказки */
+        #hints {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(10, 25, 40, 0.85);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.4);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            max-width: 250px;
+        }
+        
+        .hint {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .hint:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .hint-key {
+            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-right: 12px;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+            text-shadow: none;
+            font-size: 13px;
+        }
+        
+        .hint-text {
+            color: #ecf0f1;
+            font-size: 14px;
+        }
+        
+        /* Анимации */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .value-update {
+            animation: pulse 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="hud-container">
+        <div id="hud-bg"></div>
+        
+        <div id="server-name">Московский округ</div>
+        
+        <div id="info-panel">
+            <div id="datetime">
+                <div id="time">15:45:27</div>
+                <div id="date">14 МАЯ 2023</div>
+            </div>
+            
+            <div id="money">
+                <span class="money-label">БАЛАНС</span>
+                <span class="money-value">$250,000</span>
+            </div>
+            
+            <div id="health">
+                <span class="health-label">ЗДОРОВЬЕ</span>
+                <span class="health-value">100%</span>
+            </div>
+        </div>
+        
+        <div id="hints">
+            <div class="hint">
+                <span class="hint-key">/mm</span>
+                <span class="hint-text">Меню игрока</span>
+            </div>
+            <div class="hint">
+                <span class="hint-key">/report</span>
+                <span class="hint-text">Задать вопрос</span>
+            </div>
+            <div class="hint">
+                <span class="hint-key">/donate</span>
+                <span class="hint-text">Купить донат</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Обновление времени в реальном времени
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Форматирование времени
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+            
+            // Форматирование даты
+            const months = ['ЯНВАРЯ', 'ФЕВРАЛЯ', 'МАРТА', 'АПРЕЛЯ', 'МАЯ', 'ИЮНЯ', 'ИЮЛЯ', 'АВГУСТА', 'СЕНТЯБРЯ', 'ОКТЯБРЯ', 'НОЯБРЯ', 'ДЕКАБРЯ'];
+            const day = now.getDate();
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+            document.getElementById('date').textContent = `${day} ${month} ${year}`;
+        }
+        
+        // Обновляем время каждую секунду
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+        
+        // Обработка данных от сервера SA-MP
+        let lastMoney = 0;
+        let lastHealth = 100;
+        
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            
+            if (data.type === 'updateHUD') {
+                // Обновление денег с анимацией
+                if (data.money !== undefined) {
+                    const moneyValue = document.querySelector('.money-value');
+                    moneyValue.textContent = `$${formatNumber(data.money)}`;
+                    
+                    // Анимация при изменении суммы
+                    if (data.money !== lastMoney) {
+                        moneyValue.classList.add('value-update');
+                        setTimeout(() => {
+                            moneyValue.classList.remove('value-update');
+                        }, 500);
+                        lastMoney = data.money;
+                    }
+                }
+                
+                // Обновление здоровья
+                if (data.health !== undefined) {
+                    const healthPercent = Math.floor(data.health);
+                    const healthValue = document.querySelector('.health-value');
+                    healthValue.textContent = `${healthPercent}%`;
+                    
+                    // Анимация при изменении здоровья
+                    if (healthPercent !== lastHealth) {
+                        healthValue.classList.add('value-update');
+                        setTimeout(() => {
+                            healthValue.classList.remove('value-update');
+                        }, 500);
+                        lastHealth = healthPercent;
+                    }
+                    
+                    // Изменение цвета в зависимости от уровня здоровья
+                    const healthElement = document.getElementById('health');
+                    if (healthPercent > 70) {
+                        healthElement.style.borderLeftColor = '#2ecc71';
+                        healthValue.style.color = '#2ecc71';
+                    } else if (healthPercent > 30) {
+                        healthElement.style.borderLeftColor = '#f39c12';
+                        healthValue.style.color = '#f39c12';
+                    } else {
+                        healthElement.style.borderLeftColor = '#e74c3c';
+                        healthValue.style.color = '#e74c3c';
+                    }
+                }
+            }
+        });
+        
+        // Форматирование числа с разделителями
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    </script>
+</body>
+</html>
