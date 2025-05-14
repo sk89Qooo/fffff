@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация | BLURRE RP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', 'Arial', sans-serif;
+            user-select: none;
+        }
+        
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: url('https://i.imgur.com/JVQW9gX.jpg') no-repeat center center;
+            background-size: cover;
+        }
+        
+        .register-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        
+        .register-box {
+            width: 400px;
+            background: rgba(20, 20, 30, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .register-header {
+            background: linear-gradient(90deg, #3333ff, #ff00cc);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .register-body {
+            padding: 25px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            display: block;
+            color: #aaa;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            border-color: #5dade2;
+            box-shadow: 0 0 10px rgba(93, 173, 226, 0.5);
+        }
+        
+        .register-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #ff00cc, #3333ff);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 51, 255, 0.4);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .login-link a {
+            color: #5dade2;
+            text-decoration: none;
+        }
+        
+        .server-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-box">
+            <div class="register-header">
+                BLURRE ROLE PLAY
+            </div>
+            <div class="register-body">
+                <div class="input-group">
+                    <label class="input-label">Имя персонажа</label>
+                    <input type="text" class="input-field" id="reg-name" placeholder="Введите имя">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Фамилия персонажа</label>
+                    <input type="text" class="input-field" id="reg-lastname" placeholder="Введите фамилию">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Пароль</label>
+                    <input type="password" class="input-field" id="reg-password" placeholder="Введите пароль">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Повторите пароль</label>
+                    <input type="password" class="input-field" id="reg-password2" placeholder="Повторите пароль">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Пол персонажа</label>
+                    <select class="input-field" id="reg-gender">
+                        <option value="1">Мужской</option>
+                        <option value="2">Женский</option>
+                    </select>
+                </div>
+                
+                <button class="register-btn" id="register-btn">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+                
+                <div class="login-link">
+                    Уже есть аккаунт? <a href="#" id="login-link">Войти</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="server-info">
+        BLURRE RP | Московский округ | v1.0
+    </div>
+
+    <script>
+        // Обработка нажатия кнопки регистрации
+        document.getElementById('register-btn').addEventListener('click', function() {
+            const name = document.getElementById('reg-name').value.trim();
+            const lastname = document.getElementById('reg-lastname').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const password2 = document.getElementById('reg-password2').value;
+            const gender = document.getElementById('reg-gender').value;
+            
+            // Проверка заполнения полей
+            if(!name || !lastname || !password || !password2) {
+                if(typeof cef !== 'undefined') {
+                    cef.emit("register:showError", "Заполните все поля!");
+                } else {
+                    alert("Заполните все поля!");
+                }
+                return;
+            }
+            
+            // Проверка совпадения паролей
+            if(password !== password2) {
+                if(typeof cef !== 'undefined') {
+                    cef.emit("register:showError", "Пароли не совпадают!");
+                } else {
+                    alert("Пароли не совпадают!");
+                }
+                return;
+            }
+            
+            // Отправка данных на сервер
+            if(typeof cef !== 'undefined') {
+                cef.emit("register:submit", name, lastname, password, gender);
+            } else {
+                console.log("Регистрация:", {name, lastname, password, gender});
+                alert("Регистрация успешна (тестовый режим)");
+            }
+        });
+        
+        // Обработка перехода к авторизации
+        document.getElementById('login-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            if(typeof cef !== 'undefined') {
+                cef.emit("register:showLogin");
+            } else {
+                alert("Переход к авторизации (тестовый режим)");
+            }
+        });
+        
+        // Обработка сообщений от сервера
+        if(typeof cef !== 'undefined') {
+            cef.on("register:showError", function(message) {
+                alert(message);
+            });
+            
+            cef.on("register:success", function() {
+                alert("Регистрация успешно завершена!");
+            });
+        } else {
+            console.log("CEF не обнаружен, работает в тестовом режиме");
+        }
+    </script>
+</body>
+</html>
