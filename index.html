@@ -1,313 +1,251 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SA-MP HUD</title>
     <style>
-        @font-face {
-            font-family: 'SA Font';
-            src: url('https://your-server.com/fonts/sa-gta.ttf') format('truetype');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            user-select: none;
         }
         
         body {
-            margin: 0;
-            padding: 0;
             overflow: hidden;
-            font-family: 'SA Font', 'Arial', sans-serif;
-            background: transparent;
+            width: 100vw;
+            height: 100vh;
         }
         
-        #hud-container {
+        .hud-container {
             position: absolute;
             width: 100%;
             height: 100%;
             pointer-events: none;
         }
         
-        /* Анимированный градиентный фон для всего HUD */
-        #hud-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(11,22,35,0.95) 0%, rgba(23,42,58,0.9) 70%);
-            opacity: 0.8;
-            z-index: -1;
-        }
-        
-        /* Панель информации (правая сторона) */
-        #info-panel {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: rgba(10, 25, 40, 0.85);
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 0 25px rgba(0,0,0,0.4);
-            border: 1px solid rgba(52, 152, 219, 0.3);
-            min-width: 200px;
-        }
-        
-        /* Время и дата */
-        #datetime {
-            text-align: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(52, 152, 219, 0.2);
-        }
-        
-        #time {
-            font-size: 24px;
-            color: #f1c40f;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-shadow: 0 0 8px rgba(241, 196, 15, 0.3);
-        }
-        
-        #date {
-            font-size: 16px;
-            color: #ecf0f1;
-            opacity: 0.9;
-            margin-top: 5px;
-        }
-        
-        /* Деньги */
-        #money {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 12px 0;
-            padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 6px;
-            border-left: 3px solid #2ecc71;
-        }
-        
-        .money-label {
-            color: #bdc3c7;
-            font-size: 14px;
-        }
-        
-        .money-value {
-            color: #2ecc71;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        /* Здоровье */
-        #health {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 12px 0 5px 0;
-            padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 6px;
-            border-left: 3px solid #e74c3c;
-        }
-        
-        .health-label {
-            color: #bdc3c7;
-            font-size: 14px;
-        }
-        
-        .health-value {
-            color: #e74c3c;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        /* Название сервера */
-        #server-name {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            font-size: 24px;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
-            background: linear-gradient(90deg, rgba(41,128,185,0.4) 0%, transparent 100%);
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-        
-        /* Подсказки */
-        #hints {
+        /* Health and Armor */
+        .status-bars {
             position: absolute;
             bottom: 20px;
             left: 20px;
-            background: rgba(10, 25, 40, 0.85);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 0 25px rgba(0,0,0,0.4);
-            border: 1px solid rgba(52, 152, 219, 0.3);
-            max-width: 250px;
-        }
-        
-        .hint {
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed rgba(255,255,255,0.1);
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 10px;
+            width: 200px;
         }
         
-        .hint:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
+        .status-bar {
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .hint-key {
-            background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%);
-            color: #000;
-            padding: 4px 10px;
-            border-radius: 4px;
-            margin-right: 12px;
+        .status-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        #health .status-fill {
+            background-color: #e74c3c;
+        }
+        
+        #armour .status-fill {
+            background-color: #3498db;
+        }
+        
+        /* Money */
+        .money-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 18px;
             font-weight: bold;
-            min-width: 60px;
-            text-align: center;
-            text-shadow: none;
-            font-size: 13px;
         }
         
-        .hint-text {
-            color: #ecf0f1;
-            font-size: 14px;
+        /* Wanted */
+        .wanted-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
         }
         
-        /* Анимации */
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.03); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 1; }
+        .wanted-star {
+            width: 30px;
+            height: 30px;
+            margin: 2px;
+            background-color: yellow;
+            clip-path: polygon(
+                50% 0%, 61% 35%, 98% 35%, 68% 57%, 
+                79% 91%, 50% 70%, 21% 91%, 32% 57%, 
+                2% 35%, 39% 35%
+            );
         }
         
-        .value-update {
-            animation: pulse 0.5s ease-in-out;
+        /* Weapon */
+        .weapon-container {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .weapon-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+        }
+        
+        .ammo-count {
+            font-size: 16px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div id="hud-container">
-        <div id="hud-bg"></div>
-        
-        <div id="server-name">Московский округ</div>
-        
-        <div id="info-panel">
-            <div id="datetime">
-                <div id="time">15:45:27</div>
-                <div id="date">14 МАЯ 2023</div>
+    <div class="hud-container">
+        <!-- Health and Armor -->
+        <div class="status-bars">
+            <div class="status-bar" id="health">
+                <div class="status-fill" style="width: 100%"></div>
             </div>
-            
-            <div id="money">
-                <span class="money-label">БАЛАНС</span>
-                <span class="money-value">$250,000</span>
-            </div>
-            
-            <div id="health">
-                <span class="health-label">ЗДОРОВЬЕ</span>
-                <span class="health-value">100%</span>
+            <div class="status-bar" id="armour">
+                <div class="status-fill" style="width: 100%"></div>
             </div>
         </div>
         
-        <div id="hints">
-            <div class="hint">
-                <span class="hint-key">/mm</span>
-                <span class="hint-text">Меню игрока</span>
-            </div>
-            <div class="hint">
-                <span class="hint-key">/report</span>
-                <span class="hint-text">Задать вопрос</span>
-            </div>
-            <div class="hint">
-                <span class="hint-key">/donate</span>
-                <span class="hint-text">Купить донат</span>
-            </div>
+        <!-- Money -->
+        <div class="money-container" id="money">
+            $0
+        </div>
+        
+        <!-- Wanted Level -->
+        <div class="wanted-container" id="wanted">
+            <!-- Stars will be added dynamically -->
+        </div>
+        
+        <!-- Weapon -->
+        <div class="weapon-container" id="weapon-info" style="display: none;">
+            <div class="weapon-icon" id="gunid">🔫</div>
+            <div class="ammo-count" id="ammo"></div>
         </div>
     </div>
 
     <script>
-        // Обновление времени в реальном времени
-        function updateDateTime() {
-            const now = new Date();
+        let health = document.getElementById('health').querySelector('.status-fill');
+        let armour = document.getElementById('armour').querySelector('.status-fill');
+        let moneys = document.getElementById('money');
+        let wanteds = document.getElementById('wanted');
+        let gunIcon = document.getElementById('gunid');
+        let ammos = document.getElementById('ammo');
+        let weaponContainer = document.getElementById('weapon-info');
+
+        // Initialize CEF communication
+        if (typeof cef !== 'undefined') {
+            cef.emit("game:hud:setComponentVisible", "interface", false);
             
-            // Форматирование времени
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+            cef.on("game:hud:newVisibleState", (success) => {
+                if (typeof cef.hide === 'function') {
+                    cef.hide(!success);
+                }
+            });
+
+            cef.emit("game:data:pollPlayerStats", true, 50);
             
-            // Форматирование даты
-            const months = ['ЯНВАРЯ', 'ФЕВРАЛЯ', 'МАРТА', 'АПРЕЛЯ', 'МАЯ', 'ИЮНЯ', 'ИЮЛЯ', 'АВГУСТА', 'СЕНТЯБРЯ', 'ОКТЯБРЯ', 'НОЯБРЯ', 'ДЕКАБРЯ'];
-            const day = now.getDate();
-            const month = months[now.getMonth()];
-            const year = now.getFullYear();
-            document.getElementById('date').textContent = `${day} ${month} ${year}`;
+            cef.on("game:data:playerStats", (hp, max_hp, arm, breath, wanted, weapon, ammo, max_ammo, money, speed) => {
+                // Update health
+                const healthPercent = (hp / max_hp) * 100;
+                health.style.width = `${healthPercent}%`;
+                
+                // Update armor
+                const armorPercent = arm;
+                armour.style.width = `${armorPercent}%`;
+                
+                // Update money
+                moneys.textContent = `$${money.toLocaleString()}`;
+                
+                // Update wanted level
+                updateWantedLevel(wanted);
+                
+                // Update weapon info
+                updateWeaponInfo(weapon, ammo, max_ammo);
+            });
+        } else {
+            // For testing without CEF
+            console.log("CEF not detected - running in test mode");
+            
+            // Test data
+            setInterval(() => {
+                const testHP = Math.random() * 100;
+                const testArmor = Math.random() * 100;
+                const testMoney = Math.floor(Math.random() * 1000000);
+                const testWanted = Math.floor(Math.random() * 6);
+                const testWeapon = Math.floor(Math.random() * 10);
+                const testAmmo = Math.floor(Math.random() * 30);
+                const testMaxAmmo = 30;
+                
+                health.style.width = `${testHP}%`;
+                armour.style.width = `${testArmor}%`;
+                moneys.textContent = `$${testMoney.toLocaleString()}`;
+                updateWantedLevel(testWanted);
+                updateWeaponInfo(testWeapon, testAmmo, testMaxAmmo);
+            }, 1000);
         }
         
-        // Обновляем время каждую секунду
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
-        
-        // Обработка данных от сервера SA-MP
-        let lastMoney = 0;
-        let lastHealth = 100;
-        
-        window.addEventListener('message', function(event) {
-            const data = event.data;
+        function updateWantedLevel(level) {
+            // Clear existing stars
+            wanteds.innerHTML = '';
             
-            if (data.type === 'updateHUD') {
-                // Обновление денег с анимацией
-                if (data.money !== undefined) {
-                    const moneyValue = document.querySelector('.money-value');
-                    moneyValue.textContent = `$${formatNumber(data.money)}`;
-                    
-                    // Анимация при изменении суммы
-                    if (data.money !== lastMoney) {
-                        moneyValue.classList.add('value-update');
-                        setTimeout(() => {
-                            moneyValue.classList.remove('value-update');
-                        }, 500);
-                        lastMoney = data.money;
-                    }
-                }
-                
-                // Обновление здоровья
-                if (data.health !== undefined) {
-                    const healthPercent = Math.floor(data.health);
-                    const healthValue = document.querySelector('.health-value');
-                    healthValue.textContent = `${healthPercent}%`;
-                    
-                    // Анимация при изменении здоровья
-                    if (healthPercent !== lastHealth) {
-                        healthValue.classList.add('value-update');
-                        setTimeout(() => {
-                            healthValue.classList.remove('value-update');
-                        }, 500);
-                        lastHealth = healthPercent;
-                    }
-                    
-                    // Изменение цвета в зависимости от уровня здоровья
-                    const healthElement = document.getElementById('health');
-                    if (healthPercent > 70) {
-                        healthElement.style.borderLeftColor = '#2ecc71';
-                        healthValue.style.color = '#2ecc71';
-                    } else if (healthPercent > 30) {
-                        healthElement.style.borderLeftColor = '#f39c12';
-                        healthValue.style.color = '#f39c12';
-                    } else {
-                        healthElement.style.borderLeftColor = '#e74c3c';
-                        healthValue.style.color = '#e74c3c';
-                    }
-                }
+            // Add new stars (max 6 as in GTA)
+            level = Math.min(6, level);
+            for (let i = 0; i < level; i++) {
+                const star = document.createElement('div');
+                star.className = 'wanted-star';
+                wanteds.appendChild(star);
             }
-        });
+        }
         
-        // Форматирование числа с разделителями
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        function updateWeaponInfo(weapon, ammo, max_ammo) {
+            if (weapon === 0) {
+                // No weapon
+                weaponContainer.style.display = 'none';
+                return;
+            }
+            
+            weaponContainer.style.display = 'flex';
+            
+            // Simple weapon icons based on common types
+            let weaponSymbol = '🔫';
+            if (weapon >= 22 && weapon <= 24) weaponSymbol = '🔪'; // Knife
+            else if (weapon >= 25 && weapon <= 27) weaponSymbol = '💣'; // Grenades
+            else if (weapon >= 28 && weapon <= 32) weaponSymbol = '🔫'; // Pistols
+            else if (weapon >= 33 && weapon <= 34) weaponSymbol = '🔫'; // Deagle, shotgun
+            else if (weapon >= 35 && weapon <= 38) weaponSymbol = '🏹'; // Rifles
+            else if (weapon >= 41 && weapon <= 43) weaponSymbol = '🔥'; // Flamethrower, minigun
+            
+            gunIcon.textContent = weaponSymbol;
+            ammos.textContent = `${ammo}/${max_ammo}`;
         }
     </script>
 </body>
