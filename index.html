@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SA-MP HUD</title>
+    <title>BLURRE ROLE PLAY</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-            color: white;
+            font-family: 'Rajdhani', 'Arial', sans-serif;
             user-select: none;
         }
         
@@ -20,148 +19,224 @@
             height: 100vh;
         }
         
+        /* Левый блок с названием сервера */
+        .server-info {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .server-name {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #ff00cc, #3333ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 3px;
+        }
+        
+        .server-location {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* Правый HUD */
         .hud-container {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        
-        /* Health and Armor */
-        .status-bars {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 200px;
-        }
-        
-        .status-bar {
-            height: 20px;
+            top: 15px;
+            right: 15px;
+            width: 280px;
+            background: rgba(10, 10, 20, 0.7);
             border-radius: 10px;
             overflow: hidden;
-            background-color: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
         }
         
-        .status-fill {
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-        
-        #health .status-fill {
-            background-color: #e74c3c;
-        }
-        
-        #armour .status-fill {
-            background-color: #3498db;
-        }
-        
-        /* Money */
-        .money-container {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        /* Wanted */
-        .wanted-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .hud-header {
+            background: linear-gradient(90deg, rgba(40, 40, 60, 0.8), rgba(20, 20, 40, 0.8));
+            padding: 8px 15px;
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .wanted-star {
-            width: 30px;
-            height: 30px;
-            margin: 2px;
-            background-color: yellow;
-            clip-path: polygon(
-                50% 0%, 61% 35%, 98% 35%, 68% 57%, 
-                79% 91%, 50% 70%, 21% 91%, 32% 57%, 
-                2% 35%, 39% 35%
-            );
+        .hud-title {
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
         }
         
-        /* Weapon */
-        .weapon-container {
-            position: absolute;
-            bottom: 80px;
-            right: 20px;
+        .hud-time {
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .hud-content {
+            padding: 12px 15px;
+        }
+        
+        .stat-row {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 5px;
+            align-items: center;
+            margin-bottom: 10px;
         }
         
-        .weapon-icon {
-            width: 40px;
-            height: 40px;
-            background-color: rgba(255, 255, 255, 0.2);
-            margin-bottom: 5px;
+        .stat-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            color: #fff;
+            font-size: 16px;
         }
         
-        .ammo-count {
+        .stat-info {
+            flex: 1;
+        }
+        
+        .stat-label {
+            color: #aaa;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+        
+        .stat-value {
+            color: #fff;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
+        }
+        
+        .progress-container {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .health-bar {
+            background: linear-gradient(90deg, #e74c3c, #ff6b6b);
+            box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+        }
+        
+        .armor-bar {
+            background: linear-gradient(90deg, #3498db, #5dade2);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        
+        .money-icon {
+            color: #f1c40f;
+        }
+        
+        /* Анимированный фон для всего интерфейса */
+        .interface-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 0, 200, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(0, 100, 255, 0.1) 0%, transparent 30%);
+            animation: bg-pulse 15s infinite alternate;
+            z-index: -1;
+        }
+        
+        @keyframes bg-pulse {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.7; }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+    <div class="interface-bg"></div>
+    
+    <!-- Левый блок с названием сервера -->
+    <div class="server-info">
+        <div class="server-name">BLURRE ROLE PLAY</div>
+        <div class="server-location">Московский округ</div>
+    </div>
+    
+    <!-- Правый HUD -->
     <div class="hud-container">
-        <!-- Health and Armor -->
-        <div class="status-bars">
-            <div class="status-bar" id="health">
-                <div class="status-fill" style="width: 100%"></div>
+        <div class="hud-header">
+            <div class="hud-title">СТАТУС</div>
+            <div class="hud-time" id="time">00:00:00</div>
+        </div>
+        
+        <div class="hud-content">
+            <!-- Health -->
+            <div class="stat-row">
+                <div class="stat-icon" style="color: #e74c3c;">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">ЗДОРОВЬЕ</div>
+                    <div class="stat-value" id="health-value">100%</div>
+                    <div class="progress-container">
+                        <div class="progress-bar health-bar" id="health-bar" style="width: 100%"></div>
+                    </div>
+                </div>
             </div>
-            <div class="status-bar" id="armour">
-                <div class="status-fill" style="width: 100%"></div>
+            
+            <!-- Armor -->
+            <div class="stat-row">
+                <div class="stat-icon" style="color: #3498db;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">БРОНЯ</div>
+                    <div class="stat-value" id="armor-value">0%</div>
+                    <div class="progress-container">
+                        <div class="progress-bar armor-bar" id="armor-bar" style="width: 0%"></div>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <!-- Money -->
-        <div class="money-container" id="money">
-            $0
-        </div>
-        
-        <!-- Wanted Level -->
-        <div class="wanted-container" id="wanted">
-            <!-- Stars will be added dynamically -->
-        </div>
-        
-        <!-- Weapon -->
-        <div class="weapon-container" id="weapon-info" style="display: none;">
-            <div class="weapon-icon" id="gunid">🔫</div>
-            <div class="ammo-count" id="ammo"></div>
+            
+            <!-- Money -->
+            <div class="stat-row">
+                <div class="stat-icon money-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">БАЛАНС</div>
+                    <div class="stat-value" id="money">$0</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        let health = document.getElementById('health').querySelector('.status-fill');
-        let armour = document.getElementById('armour').querySelector('.status-fill');
-        let moneys = document.getElementById('money');
-        let wanteds = document.getElementById('wanted');
-        let gunIcon = document.getElementById('gunid');
-        let ammos = document.getElementById('ammo');
-        let weaponContainer = document.getElementById('weapon-info');
-
-        // Initialize CEF communication
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // CEF communication
         if (typeof cef !== 'undefined') {
             cef.emit("game:hud:setComponentVisible", "interface", false);
             
@@ -175,21 +250,17 @@
             
             cef.on("game:data:playerStats", (hp, max_hp, arm, breath, wanted, weapon, ammo, max_ammo, money, speed) => {
                 // Update health
-                const healthPercent = (hp / max_hp) * 100;
-                health.style.width = `${healthPercent}%`;
+                const healthPercent = Math.round((hp / max_hp) * 100);
+                document.getElementById('health-value').textContent = `${healthPercent}%`;
+                document.getElementById('health-bar').style.width = `${healthPercent}%`;
                 
                 // Update armor
-                const armorPercent = arm;
-                armour.style.width = `${armorPercent}%`;
+                const armorPercent = Math.round(arm);
+                document.getElementById('armor-value').textContent = `${armorPercent}%`;
+                document.getElementById('armor-bar').style.width = `${armorPercent}%`;
                 
                 // Update money
-                moneys.textContent = `$${money.toLocaleString()}`;
-                
-                // Update wanted level
-                updateWantedLevel(wanted);
-                
-                // Update weapon info
-                updateWeaponInfo(weapon, ammo, max_ammo);
+                document.getElementById('money').textContent = `$${money.toLocaleString()}`;
             });
         } else {
             // For testing without CEF
@@ -197,55 +268,16 @@
             
             // Test data
             setInterval(() => {
-                const testHP = Math.random() * 100;
-                const testArmor = Math.random() * 100;
+                const testHP = Math.floor(Math.random() * 100);
+                const testArmor = Math.floor(Math.random() * 100);
                 const testMoney = Math.floor(Math.random() * 1000000);
-                const testWanted = Math.floor(Math.random() * 6);
-                const testWeapon = Math.floor(Math.random() * 10);
-                const testAmmo = Math.floor(Math.random() * 30);
-                const testMaxAmmo = 30;
                 
-                health.style.width = `${testHP}%`;
-                armour.style.width = `${testArmor}%`;
-                moneys.textContent = `$${testMoney.toLocaleString()}`;
-                updateWantedLevel(testWanted);
-                updateWeaponInfo(testWeapon, testAmmo, testMaxAmmo);
-            }, 1000);
-        }
-        
-        function updateWantedLevel(level) {
-            // Clear existing stars
-            wanteds.innerHTML = '';
-            
-            // Add new stars (max 6 as in GTA)
-            level = Math.min(6, level);
-            for (let i = 0; i < level; i++) {
-                const star = document.createElement('div');
-                star.className = 'wanted-star';
-                wanteds.appendChild(star);
-            }
-        }
-        
-        function updateWeaponInfo(weapon, ammo, max_ammo) {
-            if (weapon === 0) {
-                // No weapon
-                weaponContainer.style.display = 'none';
-                return;
-            }
-            
-            weaponContainer.style.display = 'flex';
-            
-            // Simple weapon icons based on common types
-            let weaponSymbol = '🔫';
-            if (weapon >= 22 && weapon <= 24) weaponSymbol = '🔪'; // Knife
-            else if (weapon >= 25 && weapon <= 27) weaponSymbol = '💣'; // Grenades
-            else if (weapon >= 28 && weapon <= 32) weaponSymbol = '🔫'; // Pistols
-            else if (weapon >= 33 && weapon <= 34) weaponSymbol = '🔫'; // Deagle, shotgun
-            else if (weapon >= 35 && weapon <= 38) weaponSymbol = '🏹'; // Rifles
-            else if (weapon >= 41 && weapon <= 43) weaponSymbol = '🔥'; // Flamethrower, minigun
-            
-            gunIcon.textContent = weaponSymbol;
-            ammos.textContent = `${ammo}/${max_ammo}`;
+                document.getElementById('health-value').textContent = `${testHP}%`;
+                document.getElementById('health-bar').style.width = `${testHP}%`;
+                document.getElementById('armor-value').textContent = `${testArmor}%`;
+                document.getElementById('armor-bar').style.width = `${testArmor}%`;
+                document.getElementById('money').textContent = `$${testMoney.toLocaleString()}`;
+            }, 2000);
         }
     </script>
 </body>
