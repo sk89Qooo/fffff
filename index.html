@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game HUD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <div class="hud-container">
+        <!-- Фон -->
+        <img id="backid" class="background-image" src="../hud/image/background/default.png" alt="Background">
+        
+        <!-- Основная информация -->
+        <div class="hud-main">
+            <!-- Здоровье и броня -->
+            <div class="stats-row">
+                <div class="stat-item health-item">
+                    <span class="stat-label">HEALTH</span>
+                    <div class="stat-bar">
+                        <progress id="health" class="health-bar" value="100" max="100"></progress>
+                    </div>
+                    <span class="stat-value" id="health-text">100%</span>
+                </div>
+                
+                <div class="stat-item armour-item">
+                    <span class="stat-label">ARMOUR</span>
+                    <div class="stat-bar">
+                        <progress id="armour" class="armour-bar" value="0" max="100"></progress>
+                    </div>
+                    <span class="stat-value" id="armour-text">0%</span>
+                </div>
+            </div>
+            
+            <!-- Деньги и уровень розыска -->
+            <div class="info-row">
+                <div class="money-display">
+                    <span class="info-label">MONEY</span>
+                    <span id="money" class="money-value">$0</span>
+                </div>
+                
+                <div class="wanted-display">
+                    <span class="info-label">WANTED</span>
+                    <img id="wanted" class="wanted-icon" src="../hud/image/wanted/wanted-0.png" alt="Wanted Level">
+                </div>
+            </div>
+            
+            <!-- Оружие и боеприпасы -->
+            <div class="weapon-row">
+                <img id="gunid" class="weapon-icon" src="../hud/image/guns/0.png" alt="Weapon">
+                <span id="ammo" class="ammo-count">0/0</span>
+            </div>
+        </div>
+        
+        <!-- Дополнительная информация (можно добавить позже) -->
+        <div class="hud-footer">
+            <div class="location-display">
+                <span class="location-text">Los Santos</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
